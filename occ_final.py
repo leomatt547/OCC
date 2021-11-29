@@ -33,19 +33,29 @@ def load_transaksi_file(filename):
 def OCC(filename, data, transaksi):
     temp_data = data
     for t in transaksi:
-        if (t['timestamp']<temp_data[t['data']]["timestamp"]):
-            print(f'Maaf, terjadi konflik pada operasi: {t}')
+        print("Operasi:", t['op'])
+        print("Data target:", t['data'])
+        print("Timestamp Operasi:", t['timestamp'])
+        print("Timestamp Transaksi Terakhir:", temp_data[t['data']]["timestamp"])
+        if (t['timestamp'] < temp_data[t['data']]["timestamp"]):
+            print(f"Maaf, terjadi konflik pada operasi {t['data']}")
+            print("Timestamp lebih kecil dari", temp_data[t['data']]["timestamp"])
+            print("-----------------------------------")
             return
         else:
             if(t['op']=='R' or t['op']=='C'):
                 temp_data[t['data']]["timestamp"] = t['timestamp']
+                print("Update timestamp transaksi terbaru menjadi", temp_data[t['data']]["timestamp"])
             elif(t['op']=='W'):
                 temp_data[t['data']]["timestamp"] = t['timestamp']
                 if(t['value']['add']==True):
                     temp_data[t['data']]["value"] += t['value']['val']
+                    print("Penambahan", t['value']['val'], "menjadi", temp_data[t['data']]["value"])
                 else:
                     temp_data[t['data']]["value"] -= t['value']['val']
-    print()
+                    print("Pengurangan", t['value']['val'], "menjadi", temp_data[t['data']]["value"])
+                print("Update timestamp transaksi terbaru menjadi", temp_data[t['data']]["timestamp"])
+        print("-----------------------------------")
     write_data_file(filename, temp_data)
     print("Menulis data pada file....")
 
